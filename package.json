@@ -1,0 +1,8 @@
+{
+  "name": "sdd-type-writer",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "skills:install": "npx -y skills experimental_install -y"
+  }
+}

@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "c4-diagrams": {
+      "source": "intent-driven-dev/skills",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/c4-diagrams/SKILL.md",
+      "computedHash": "3ae730fbe489cdc02610467133f8a99b8735b138eb40cd0fe06a5b84e7e242eb"
+    },
     "grill-me": {
       "source": "mattpocock/skills",
       "sourceType": "github",
