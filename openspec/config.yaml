@@ -1,32 +1,42 @@
 schema: spec-driven
-
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
-
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
-
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+context: |
+  Product: static typing-tutor website. A learner enters a name, types generated English text for exactly
+  2 minutes, and gets score = round(net WPM × accuracy); a personal best per name is kept in localStorage.
+  Source of truth: openspec/specs/. Requirements not yet specced live in docs/requirements-backlog.md
+  (its "Change plan" table says which change captures which requirement). Technical decisions: docs/adr/.
+  Stack (ADR-0001): Next.js App Router with output:'export', single route '/', React, TypeScript strict,
+  CSS Modules + CSS custom-property tokens, system fonts only; deployed to GitHub Pages under
+  /sdd-type-writer/ (basePath from env).
+  Input (ADR-0002): hidden textarea, beforeinput is the only source of edits; the typing engine is the single source of truth.
+  Tooling (ADR-0003): Node 24, npm, ESLint + Prettier, Vitest + @testing-library/react (jsdom), Playwright;
+  CI runs lint, typecheck, tests with ≥90% line coverage on src/lib, build, e2e, openspec validate --all --strict.
+  Hard rules: no backend, no network requests after load, no third-party origins (fonts/CDNs), localStorage
+  only and every access in try/catch, user text rendered as text (never dangerouslySetInnerHTML).
+  Architecture: pure logic in src/lib (passage, typingEngine, timer, scoring, names, storage) with no React
+  or DOM imports and an injected clock and random source; UI in src/components; screen state machine in app/page.tsx.
+  Conventions: conventional commits; one OpenSpec change per branch (feature/<change-name>).
+rules:
+  proposal:
+    - List the requirement names from docs/requirements-backlog.md that this change captures
+    - Include a Non-goals section naming backlog requirements deliberately left for later changes
+  specs:
+    - Use SHALL/MUST; every requirement has at least one WHEN/THEN scenario
+    - Copy requirement and scenario wording and numbers from docs/requirements-backlog.md; do not invent behaviour
+    - If behaviour is missing or ambiguous, stop and ask instead of deciding in the spec
+  design:
+    - Link the ADRs the change relies on instead of repeating them
+    - Name the src/lib module and public function signatures each requirement maps to
+    - List the test seams (public functions/components) to be tested
+  tasks:
+    - Each task references the requirement name it implements
+    - Tasks are small (≤ 1–2 h) and ordered test-first
+    - The last task removes the captured requirements from docs/requirements-backlog.md (and deletes the file when it has none left)
+operations:
+  apply:
+    guidance:
+      - "Follow the tdd skill: one failing test per scenario, then minimal code"
+      - "Test names quote the spec scenario title"
+      - "If the spec does not cover something discovered during apply, stop and update the change's delta spec first"
+  archive:
+    guidance:
+      - Confirm the captured requirements were removed from docs/requirements-backlog.md before archiving
