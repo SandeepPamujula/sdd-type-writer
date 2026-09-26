@@ -1,0 +1,76 @@
+schema: spec-driven
+
+# Project context — shown to the AI when creating every artifact.
+context: |
+  Product: "Type Writer", a web app for practicing touch typing and improving typing speed.
+  - Users enter a display name (no password/auth in v1) and start practicing immediately.
+  - Core loop: show a passage -> user types it -> live feedback per character
+    (correct / incorrect / pending) -> results screen with WPM, accuracy, errors, time.
+  - Progress: store each session per user so they can see WPM/accuracy trends over time
+    and practice their weakest keys.
+  - Audience: learners and casual users on desktop browsers with a physical keyboard.
+    Mobile is view-only in v1.
+
+  Metric definitions (use consistently across specs, code and tests):
+  - Gross WPM = (typed characters / 5) / elapsed minutes
+  - Net WPM   = Gross WPM - (uncorrected errors / elapsed minutes), floored at 0
+  - Accuracy  = correct keystrokes / total keystrokes * 100
+  - Timer starts on the first keystroke, not when the passage is shown.
+
+  Tech stack:
+  - Next.js (latest stable, App Router), React, TypeScript in strict mode
+  - Styling: Tailwind CSS
+  - Server logic: Next.js Route Handlers and Server Actions; validate input with Zod
+  - Persistence: PostgreSQL (Amazon RDS) via Prisma ORM
+  - Testing: Vitest + React Testing Library (unit/component), Playwright (end-to-end)
+  - Tooling: npm, ESLint, Prettier, Node.js LTS
+
+  Deployment (AWS EKS):
+  - Container image built from Next.js `output: "standalone"`, multi-stage Dockerfile,
+    non-root user, pushed to Amazon ECR
+  - Deployed to Amazon EKS with Helm; exposed through AWS Load Balancer Controller (ALB Ingress)
+  - Horizontal Pod Autoscaler; liveness/readiness probes on a /api/health endpoint
+  - Secrets (e.g. DATABASE_URL) from AWS Secrets Manager, never baked into the image
+  - Infrastructure as code with Terraform; CI/CD with GitHub Actions
+
+  Conventions:
+  - Conventional Commits
+  - Typing engine (metrics, error tracking, passage comparison) is pure TypeScript with no
+    React or I/O dependencies, so it is fully unit-testable
+  - The app must stay stateless per pod: no in-memory session state that breaks horizontal scaling
+
+# Per-artifact rules — constraints the AI follows when writing each artifact.
+rules:
+  proposal:
+    - Keep proposals under 500 words
+    - Always include "Non-goals" and "Success metrics" sections
+    - Note whether the change touches UI, API, database schema, or Kubernetes/infra
+  specs:
+    - Write requirements with SHALL/MUST and give each at least one Given/When/Then scenario
+    - Cover edge cases in scenarios - backspace/corrections, pasting, tab switching or losing focus, empty or very long names, zero-duration sessions
+    - Use the metric definitions from the project context; never redefine WPM or accuracy
+    - Include accessibility requirements for any UI (keyboard-only use, screen-reader labels, WCAG 2.1 AA contrast)
+    - Keep requirements technology-agnostic; implementation details go in design.md
+  design:
+    - Include a component/data-flow diagram (Mermaid) and state which parts are Server vs Client Components
+    - Document data model changes and the Prisma migration strategy (must be backward compatible for rolling deploys)
+    - Describe Kubernetes impact - new env vars/secrets, resource requests/limits, probes, Helm values
+    - Record key decisions with alternatives considered and trade-offs
+    - Address performance - keystroke handling must not cause re-render lag; target < 16ms per keystroke
+  tasks:
+    - Keep each task small enough to finish in about 2 hours
+    - Order tasks - typing engine and tests first, then UI, then API/persistence, then deployment
+    - Pair every feature task with its test task (Vitest unit or Playwright e2e)
+    - Include tasks for Dockerfile/Helm/Terraform updates when deployment is affected
+
+# Per-operation guidance for apply and archive.
+operations:
+  apply:
+    guidance:
+      - Run lint, typecheck and unit tests after each completed task and fix failures before moving on
+      - Do not hard-code secrets or environment-specific URLs; read them from environment variables
+      - Keep test summaries concise
+  archive:
+    guidance:
+      - Confirm all tasks are checked off and `openspec validate` passes before archiving
+      - Summarize the archive outcome and which main specs were updated
