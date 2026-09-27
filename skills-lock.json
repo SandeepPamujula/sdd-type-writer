@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "skills": {
+    "c4-diagrams": {
+      "source": "intent-driven-dev/skills",
+      "ref": "15aa67841421805c221747702839d1edfce9f950",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/c4-diagrams/SKILL.md",
+      "computedHash": "3ae730fbe489cdc02610467133f8a99b8735b138eb40cd0fe06a5b84e7e242eb"
+    },
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "ref": "v1.2.3",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/grill-me/SKILL.md",
+      "computedHash": "7edd436132b43ea2973710f0c28a9879c9b0910651eb89a991a7e98cb6dbbacb"
+    },
+    "grilling": {
+      "source": "mattpocock/skills",
+      "ref": "v1.2.3",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/grilling/SKILL.md",
+      "computedHash": "4eb5bf61b1e602f9cedbd3a5e4469dfba1db0247d5d40956d03299c455b91197"
+    },
+    "tdd": {
+      "source": "mattpocock/skills",
+      "ref": "v1.2.3",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/tdd/SKILL.md",
+      "computedHash": "140859ce43d1eb75823f67848c0cd0bc224ce7928ec33c55fa0c599f3bb3a4df"
+    }
+  }
+}
