@@ -77,6 +77,14 @@ web_modules/
 # Next.js build output
 .next
 out
+out-subpath-root
+next-env.d.ts
+
+# Playwright
+/playwright-report/
+/test-results/
+/blob-report/
+/playwright/.cache/
 
 # Nuxt.js build / generate output
 .nuxt

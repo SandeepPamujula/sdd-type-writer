@@ -22,14 +22,14 @@ is implemented test-first. CI must stop code that breaks the tests, the build or
 - TypeScript `strict`; `tsc --noEmit` as a separate check.
 
 **Tests**
-- **Vitest** + **@testing-library/react** (jsdom) for unit and component tests. Test names quote the
+- **Jest** + **@testing-library/react** (jsdom) for unit and component tests. Test names quote the
   OpenSpec scenario titles they verify.
 - **Playwright** for end-to-end tests against the built static site. CI runs Chromium on every PR;
   Firefox and WebKit are added in the `harden-accessibility-and-offline` change.
-- Coverage: **≥ 90 % line coverage for `src/lib/`**, enforced by Vitest; no threshold for UI code.
+- Coverage: **≥ 90 % line coverage for `src/lib/`**, enforced by Jest; no threshold for UI code.
 
 **CI (GitHub Actions)**
-- On every pull request: `npm ci` → lint → `tsc --noEmit` → Vitest with coverage → `next build` →
+- On every pull request: `npm ci` → lint → `tsc --noEmit` → Jest with coverage → `next build` →
   Playwright → `openspec validate --all --strict`.
 - On push to `main`: the same checks, then deploy `out/` to GitHub Pages.
 - **Branch protection on `main`:** changes arrive only through PRs, and all checks above are required.
@@ -38,28 +38,32 @@ is implemented test-first. CI must stop code that breaks the tests, the build or
 
 ## Options Considered
 
-### Option A: Vitest + Testing Library + Playwright (chosen)
-**Pros:** Fast, TypeScript-native, same `expect` style as Jest; Playwright covers all three browser engines.
-**Cons:** Vitest needs a small config for Next.js path aliases and JSX.
+### Option A: Jest + Testing Library + Playwright (chosen)
+**Pros:** Widely known, mature ecosystem and tooling, same `expect` style; Playwright covers all three
+browser engines.
+**Cons:** Slower TypeScript transform than Vitest; needs a `ts-jest` or `babel-jest` config for Next.js
+path aliases and JSX.
 
-### Option B: Jest + Testing Library + Cypress
-**Pros:** Widely known.
-**Cons:** Slower TypeScript transform setup; Cypress WebKit support is experimental.
+### Option B: Vitest + Testing Library + Cypress
+**Pros:** Fast, TypeScript-native, ESM-first.
+**Cons:** Less team familiarity; Cypress WebKit support is experimental.
 
 ## Trade-off Analysis
 
-The chosen stack gives fast unit feedback for the TDD loop and real cross-browser e2e for the input and
-timer behaviour that jsdom cannot reproduce. Adding `openspec validate` to CI keeps the specs and the code
-from drifting apart silently.
+The chosen stack gives familiar, well-documented unit tooling for the TDD loop and real cross-browser e2e
+for the input and timer behaviour that jsdom cannot reproduce. Jest's slower TypeScript transform is an
+acceptable trade for its maturity and the team's existing familiarity with it. Adding `openspec validate`
+to CI keeps the specs and the code from drifting apart silently.
 
 ## Consequences
 
 - Easier: confident refactoring; specs cannot be broken silently; a deployed build after every merge.
-- Harder: CI takes longer (Playwright); OpenSpec CLI must be installed in CI (`npx @fission-ai/openspec`).
+- Harder: CI takes longer (Playwright, plus Jest's slower TypeScript transform than Vitest); OpenSpec CLI
+  must be installed in CI (`npx @fission-ai/openspec`).
 - Revisit: add Firefox and WebKit to PR runs if cross-browser bugs appear before the hardening change.
 
 ## Action Items
-1. [ ] Change `bootstrap-web-platform`: `.nvmrc`, `engines`, ESLint, Prettier, Vitest (with coverage threshold), Playwright, npm scripts.
+1. [ ] Change `bootstrap-web-platform`: `.nvmrc`, `engines`, ESLint, Prettier, Jest (with coverage threshold), Playwright, npm scripts.
 2. [ ] Change `bootstrap-web-platform`: GitHub Actions workflows for PR checks and the Pages deploy.
 3. [ ] After Change 1 merges: enable branch protection on `main` with the required checks.
 4. [ ] Change `harden-accessibility-and-offline`: add Firefox and WebKit to Playwright.

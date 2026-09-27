@@ -8,7 +8,7 @@ context: |
   CSS Modules + CSS custom-property tokens, system fonts only; deployed to GitHub Pages under
   /sdd-type-writer/ (basePath from env).
   Input (ADR-0002): hidden textarea, beforeinput is the only source of edits; the typing engine is the single source of truth.
-  Tooling (ADR-0003): Node 24, npm, ESLint + Prettier, Vitest + @testing-library/react (jsdom), Playwright;
+  Tooling (ADR-0003): Node 24, npm, ESLint + Prettier, Jest + @testing-library/react (jsdom), Playwright;
   CI runs lint, typecheck, tests with ≥90% line coverage on src/lib, build, e2e, openspec validate --all --strict.
   Hard rules: no backend, no network requests after load, no third-party origins (fonts/CDNs), localStorage
   only and every access in try/catch, user text rendered as text (never dangerouslySetInnerHTML).
